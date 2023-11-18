@@ -1,0 +1,6 @@
+{
+	"name": "vscode-ui-connector",
+	"workspaces": [
+		"packages/*"
+	]
+}
