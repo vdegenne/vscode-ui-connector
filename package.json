@@ -9,7 +9,8 @@
 	"wireit": {
 		"build": {
 			"dependencies": [
-				"./packages/chrome-extension:build"
+				"./packages/chrome-extension:build",
+				"./packages/server:build"
 			]
 		}
 	},

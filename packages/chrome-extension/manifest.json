@@ -9,7 +9,7 @@
   "content_scripts": [
     {
       "js": [
-        "dist/assets/index-_mQnePF1.js"
+        "dist/assets/index-CsgcLGqb.js"
       ],
       "matches": [
         "http://localhost/*",

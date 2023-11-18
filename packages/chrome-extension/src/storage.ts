@@ -1,10 +1,10 @@
+import {SERVER_DEFAULT_PORT} from 'shared/constants';
 const HANDLE = 'vscode-ui-connector:port';
-const DEFAULT_PORT = '53874';
 
 export function getPort() {
 	let port = localStorage.getItem(HANDLE);
 	if (port === null) {
-		port = DEFAULT_PORT;
+		port = SERVER_DEFAULT_PORT;
 		localStorage.setItem(HANDLE, port);
 	}
 	return port;

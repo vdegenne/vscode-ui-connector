@@ -7,7 +7,8 @@
 			"types": "./lib/index.d.ts"
 		},
 		"./constants": {
-			"import": "./lib/constants.js"
+			"import": "./lib/constants.js",
+			"types": "./lib/constants.d.ts"
 		}
 	},
 	"scripts": {

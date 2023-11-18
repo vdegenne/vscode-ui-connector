@@ -1,0 +1,28 @@
+{
+	"name": "vscode-ui-connector-server",
+	"version": "1.0.0",
+	"type": "module",
+	"scripts": {
+		"build": "wireit"
+	},
+	"wireit": {
+		"build": {
+			"command": "tsc --pretty",
+			"clean": "if-file-deleted",
+			"files": [
+				"./src",
+				"tsconfig.json"
+			],
+			"output": [
+				"./out"
+			]
+		}
+	},
+	"devDependencies": {
+		"@types/koa": "^2.13.11",
+		"shared": "^1.0.0"
+	},
+	"dependencies": {
+		"koa": "^2.14.2"
+	}
+}
