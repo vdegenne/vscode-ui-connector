@@ -9,7 +9,7 @@
   "content_scripts": [
     {
       "js": [
-        "dist/assets/index-syejTui_.js"
+        "dist/assets/index-yeQTuoE2.js"
       ],
       "matches": [
         "http://localhost/*",

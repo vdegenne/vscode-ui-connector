@@ -1,5 +1,6 @@
 {
 	"name": "vscode-ui-connector-extension",
+	"version": "1.0.0",
 	"type": "module",
 	"scripts": {
 		"build": "wireit",

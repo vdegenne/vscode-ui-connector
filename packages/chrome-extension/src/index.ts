@@ -1,17 +1,21 @@
 // import {getPort} from './storage';
-import {convertNodeToInformationObject} from './utils.js';
+import {getInformationObjectFromNode} from './utils.js';
 
 document.addEventListener('click', async (event: MouseEvent) => {
-	const composedpath = event.composedPath();
+	const composedPath = event.composedPath();
 	if (event.altKey) {
 		event.stopImmediatePropagation();
 		event.stopPropagation();
 		event.preventDefault();
 
-		console.log(composedpath);
-		const infoObject = composedpath.map((node) =>
-			convertNodeToInformationObject(node as Element)
-		);
-		console.log(infoObject);
+		console.log(composedPath);
+		const infos = [];
+		for (const target of composedPath) {
+			const info = getInformationObjectFromNode(target);
+			if (info) {
+				infos.push(info);
+			}
+		}
+		console.log(infos);
 	}
 });

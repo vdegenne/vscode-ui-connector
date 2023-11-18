@@ -1,9 +1,13 @@
 {
 	"name": "shared",
+	"version": "1.0.0",
 	"type": "module",
 	"exports": {
 		".": {
 			"types": "./lib/index.d.ts"
+		},
+		"./constants": {
+			"import": "./lib/constants.js"
 		}
 	},
 	"scripts": {
