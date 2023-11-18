@@ -1,0 +1,36 @@
+{
+	"name": "vscode-ui-connector-extension",
+	"type": "module",
+	"scripts": {
+		"build": "wireit",
+		"dev": "wireit"
+	},
+	"wireit": {
+		"build": {
+			"command": "vite build && node ./scripts/update-content-scripts-location.cjs",
+			"dependencies": [
+				"../shared:build"
+			],
+			"output": [
+				"dist"
+			],
+			"files": [
+				"./src",
+				"index.html",
+				"vite.config.js",
+				"./scripts/update-content-scripts-location.cjs"
+			]
+		},
+		"dev": {
+			"command": "rm -rf ./node_modules/.vite && vite",
+			"files": [
+				"vite.config.js"
+			]
+		}
+	},
+	"devDependencies": {
+		"@types/chrome": "^0.0.251",
+		"shared": "*",
+		"vite": "^5.0.0"
+	}
+}

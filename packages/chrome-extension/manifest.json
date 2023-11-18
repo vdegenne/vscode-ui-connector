@@ -1,6 +1,20 @@
 {
-	"manifest_version": 3,
-	"name": "vscode-ui-connector",
-	"version": "1.0",
-	"description": "Chrome extension that sends useful informations to the connector server"
+  "manifest_version": 3,
+  "name": "vscode-ui-connector-extension",
+  "version": "1.0",
+  "description": "Chrome extension that sends useful informations to the connector server",
+  "permissions": [
+    "storage"
+  ],
+  "content_scripts": [
+    {
+      "js": [
+        "dist/assets/index-syejTui_.js"
+      ],
+      "matches": [
+        "http://localhost/*",
+        "https://localhost/*"
+      ]
+    }
+  ]
 }

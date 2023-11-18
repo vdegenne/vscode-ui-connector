@@ -2,5 +2,19 @@
 	"name": "vscode-ui-connector",
 	"workspaces": [
 		"packages/*"
-	]
+	],
+	"scripts": {
+		"build": "wireit"
+	},
+	"wireit": {
+		"build": {
+			"dependencies": [
+				"./packages/chrome-extension:build"
+			]
+		}
+	},
+	"devDependencies": {
+		"typescript": "^5.2.2",
+		"wireit": "^0.14.1"
+	}
 }

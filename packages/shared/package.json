@@ -1,0 +1,25 @@
+{
+	"name": "shared",
+	"type": "module",
+	"exports": {
+		".": {
+			"types": "./lib/index.d.ts"
+		}
+	},
+	"scripts": {
+		"build": "wireit"
+	},
+	"wireit": {
+		"build": {
+			"command": "tsc --pretty",
+			"clean": "if-file-deleted",
+			"files": [
+				"tsconfig.json",
+				"./src"
+			],
+			"output": [
+				"./lib"
+			]
+		}
+	}
+}
