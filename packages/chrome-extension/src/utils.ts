@@ -1,7 +1,7 @@
 import {type NodeInformation} from 'shared';
 import {IGNORED_ELEMENTS} from 'shared/constants';
 
-export function getInformationObjectFromNode(
+export function getInformationObjectFromTarget(
 	target: EventTarget
 ): NodeInformation | null {
 	if (target instanceof DocumentFragment) {
