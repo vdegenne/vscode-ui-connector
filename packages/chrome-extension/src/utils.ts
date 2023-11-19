@@ -28,14 +28,18 @@ export function getInformationObjectFromTarget(
 		// Start composing info object
 		const tagName = node.tagName.toLocaleLowerCase();
 		const id = node.getAttribute('id');
+		const textContent = node.textContent.trim();
 		const classText = node.getAttribute('class');
 		// const cssText = (node as HTMLElement).style.cssText;
 		const styleText = node.getAttribute('style');
+		const className = node.className;
 		return {
 			tagName,
 			...(id ? {id} : {}),
+			...(textContent ? {textContent} : {}),
 			...(classText ? {classText} : {}),
 			...(styleText ? {styleText} : {}),
+			...(className ? {className} : {}),
 		};
 	}
 }

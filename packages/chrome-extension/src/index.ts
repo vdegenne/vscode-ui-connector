@@ -1,3 +1,4 @@
+import {NodeInformation} from 'shared';
 import {getPort} from './storage.js';
 import {getInformationObjectFromTarget} from './utils.js';
 
@@ -8,7 +9,7 @@ document.addEventListener('click', async (event: MouseEvent) => {
 		event.stopPropagation();
 		event.preventDefault();
 
-		const infos = [];
+		const infos: NodeInformation[] = [];
 		for (const target of composedPath) {
 			const info = getInformationObjectFromTarget(target);
 			if (info) {
@@ -16,12 +17,16 @@ document.addEventListener('click', async (event: MouseEvent) => {
 			}
 		}
 
+		console.log(composedPath, infos);
+
 		// We send the information to the connector server
 		const port = getPort();
 		fetch(`http://localhost:${port}/`, {
 			method: 'POST',
 			headers: {'content-type': 'application/json'},
-			body: JSON.stringify(infos),
+			body: JSON.stringify({
+				infos: infos,
+			}),
 		});
 	}
 });

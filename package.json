@@ -10,7 +10,7 @@
 		"build": {
 			"dependencies": [
 				"./packages/chrome-extension:build",
-				"./packages/server:build"
+				"./packages/vscode-ui-connector:build"
 			]
 		}
 	},
