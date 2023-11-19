@@ -2,13 +2,15 @@
 	"name": "vscode-ui-connector-extension",
 	"version": "1.0.0",
 	"type": "module",
+	"author": "Valentin Degenne <vdegenne@gmail.com>",
+	"license": "MIT",
 	"scripts": {
 		"build": "wireit",
 		"dev": "wireit"
 	},
 	"wireit": {
 		"build": {
-			"command": "vite build && node ./scripts/update-content-scripts-location.cjs",
+			"command": "vite build",
 			"dependencies": [
 				"../shared:build"
 			],
@@ -18,8 +20,7 @@
 			"files": [
 				"./src",
 				"index.html",
-				"vite.config.js",
-				"./scripts/update-content-scripts-location.cjs"
+				"vite.config.js"
 			]
 		},
 		"dev": {

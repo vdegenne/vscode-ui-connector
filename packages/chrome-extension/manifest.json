@@ -1,20 +1,13 @@
 {
-  "manifest_version": 3,
-  "name": "vscode-ui-connector-extension",
-  "version": "1.0",
-  "description": "Chrome extension that sends useful informations to the connector server",
-  "permissions": [
-    "storage"
-  ],
-  "content_scripts": [
-    {
-      "js": [
-        "dist/assets/index-obLbot42.js"
-      ],
-      "matches": [
-        "http://localhost/*",
-        "https://localhost/*"
-      ]
-    }
-  ]
+	"manifest_version": 3,
+	"name": "vscode-ui-connector-extension",
+	"version": "1.0",
+	"description": "Chrome extension that sends useful informations to the connector server",
+	"permissions": ["storage"],
+	"content_scripts": [
+		{
+			"js": ["dist/assets/index.js"],
+			"matches": ["http://localhost/*", "https://localhost/*"]
+		}
+	]
 }

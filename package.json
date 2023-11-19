@@ -3,6 +3,7 @@
 	"workspaces": [
 		"packages/*"
 	],
+     "license": "MIT",
 	"scripts": {
 		"build": "wireit"
 	},

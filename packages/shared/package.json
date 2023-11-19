@@ -2,6 +2,8 @@
 	"name": "shared",
 	"version": "1.0.0",
 	"type": "module",
+     "author": "Valentin Degenne <vdegenne@gmail.com>",
+     "license": "MIT",
 	"exports": {
 		".": {
 			"import": "./lib/index.js",

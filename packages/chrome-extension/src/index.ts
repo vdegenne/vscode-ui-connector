@@ -30,3 +30,5 @@ document.addEventListener('click', async (event: MouseEvent) => {
 		});
 	}
 });
+
+console.log('console.log');
