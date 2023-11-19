@@ -1,9 +1,17 @@
 import fs from 'fs';
+import pathlib from 'path';
 import {CONTENT_SCRIPT_FILENAME, SERVER_DEFAULT_PORT} from 'shared/constants';
 import {Plugin} from 'rollup';
 import {getPort} from './config.js';
+import {fileURLToPath} from 'url';
+import {dirname} from 'path';
 
-let scriptContent = fs.readFileSync(CONTENT_SCRIPT_FILENAME).toString();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+let scriptContent = fs
+	.readFileSync(pathlib.join(__dirname, CONTENT_SCRIPT_FILENAME))
+	.toString();
 const port = getPort();
 if (port !== SERVER_DEFAULT_PORT) {
 	scriptContent = scriptContent.replace(

@@ -5,6 +5,6 @@
 		"moduleResolution": "NodeNext",
 		"rootDir": "src",
 		"outDir": "out",
-		"strict": true
+		"declaration": true
 	}
 }

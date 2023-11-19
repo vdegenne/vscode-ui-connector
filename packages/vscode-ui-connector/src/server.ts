@@ -57,8 +57,6 @@ export function startServer(options: ServerOptions) {
 	app.use(router.allowedMethods()).use(router.routes());
 
 	app.listen(options.port, () => {
-		console.log(
-			`VSCode UI Connector Server listening at http://localhost:${options.port}/`
-		);
+		console.log(`VSCode UI Connector Server listening on port ${options.port}`);
 	});
 }

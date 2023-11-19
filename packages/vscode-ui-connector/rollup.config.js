@@ -5,9 +5,9 @@ import json from '@rollup/plugin-json';
 
 /** @type {import('rollup').RollupOptions} */
 export default {
-	input: 'out/index.js',
+	input: 'out/cli.js',
 	output: {
-		file: 'dist/index.js',
+		file: 'dist/cli.js',
 	},
 	plugins: [
 		cjs(),
