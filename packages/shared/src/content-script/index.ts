@@ -1,4 +1,4 @@
-import {NodeInformation} from 'shared';
+import {type NodeInformation} from '../index.js';
 import {getPort} from './storage.js';
 import {getInformationObjectFromTarget} from './utils.js';
 
@@ -30,5 +30,3 @@ document.addEventListener('click', async (event: MouseEvent) => {
 		});
 	}
 });
-
-console.log('console.log');

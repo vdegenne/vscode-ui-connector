@@ -3,13 +3,14 @@
 	"workspaces": [
 		"packages/*"
 	],
-     "license": "MIT",
+	"license": "MIT",
 	"scripts": {
 		"build": "wireit"
 	},
 	"wireit": {
 		"build": {
 			"dependencies": [
+				"./packages/shared:build",
 				"./packages/chrome-extension:build",
 				"./packages/vscode-ui-connector:build"
 			]
@@ -17,6 +18,9 @@
 	},
 	"devDependencies": {
 		"@changesets/cli": "^2.26.2",
+		"@rollup/plugin-terser": "^0.4.4",
+		"rollup": "^4.5.0",
+		"tslib": "^2.6.2",
 		"typescript": "^5.2.2",
 		"wireit": "^0.14.1"
 	}

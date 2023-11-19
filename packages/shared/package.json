@@ -2,16 +2,16 @@
 	"name": "shared",
 	"version": "1.0.0",
 	"type": "module",
-     "author": "Valentin Degenne <vdegenne@gmail.com>",
-     "license": "MIT",
+	"author": "Valentin Degenne <vdegenne@gmail.com>",
+	"license": "MIT",
 	"exports": {
 		".": {
-			"import": "./lib/index.js",
-			"types": "./lib/index.d.ts"
+			"import": "./out/index.js",
+			"types": "./out/index.d.ts"
 		},
 		"./constants": {
-			"import": "./lib/constants.js",
-			"types": "./lib/constants.d.ts"
+			"import": "./out/constants.js",
+			"types": "./out/constants.d.ts"
 		}
 	},
 	"scripts": {
@@ -19,6 +19,12 @@
 	},
 	"wireit": {
 		"build": {
+			"dependencies": [
+				"build:ts",
+				"build:content-script"
+			]
+		},
+		"build:ts": {
 			"command": "tsc --pretty",
 			"clean": "if-file-deleted",
 			"files": [
@@ -26,7 +32,20 @@
 				"./src"
 			],
 			"output": [
-				"./lib"
+				"./out"
+			]
+		},
+		"build:content-script": {
+			"command": "rollup -c",
+			"files": [
+				"rollup.config.js",
+				"./out/content-script"
+			],
+			"output": [
+				"./dist"
+			],
+			"dependencies": [
+				"build:ts"
 			]
 		}
 	}

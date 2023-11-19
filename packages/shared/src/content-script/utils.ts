@@ -1,5 +1,5 @@
-import {type NodeInformation} from 'shared';
-import {IGNORED_ELEMENTS} from 'shared/constants';
+import {type NodeInformation} from '../index.js';
+import {IGNORED_ELEMENTS} from '../constants.js';
 
 export function getInformationObjectFromTarget(
 	target: EventTarget

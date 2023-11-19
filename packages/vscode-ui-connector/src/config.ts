@@ -1,11 +1,11 @@
 import fs from 'fs';
-import {CONFIG_FILENAME} from './constants.js';
+import {CONFIG_FILENAME, DEFAULT_CONFIG} from './constants.js';
 
 export interface ServerOptions {
 	/**
 	 * Port to use for the connector server.
 	 */
-	port: string;
+	port: number;
 	/**
 	 * Files to include in the grep searches.
 	 */
@@ -19,4 +19,15 @@ export function getConfig(): Partial<ServerOptions> | null {
 	} catch (e) {
 		return null;
 	}
+}
+
+export function getPort(): number {
+	const config = {
+		// default
+		...DEFAULT_CONFIG,
+		// config
+		...(getConfig() ?? {}),
+	};
+
+	return config.port;
 }
