@@ -1,12 +1,16 @@
 {
 	"name": "vscode-ui-connector",
-	"version": "0.0.2",
+	"version": "0.0.3",
 	"author": "Valentin Degenne <vdegenne@gmail.com>",
 	"license": "MIT",
 	"type": "module",
 	"module": "./out/index.js",
 	"main": "./out/index.js",
 	"types": "./out/index.d.ts",
+	"repository": {
+		"url": "https://github.com/vdegenne/vscode-ui-connector.git",
+		"directory": "vscode-ui-connector"
+	},
 	"bin": {
 		"vscode-ui-connector": "./bin/vscode-ui-connector.js",
 		"vuc": "./bin/vscode-ui-connector.js"
