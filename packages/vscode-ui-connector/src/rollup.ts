@@ -17,12 +17,20 @@ if (port !== SERVER_DEFAULT_PORT) {
 	);
 }
 
-const extensions = ['js', 'ts', 'mjs'];
 let injected = false;
+const extensions = ['js', 'ts'];
 
 export function vscodeUiConnector(): Plugin {
 	return {
 		name: 'vscode-ui-connector',
+
+		buildStart() {},
+
+		resolveId() {
+			// This is needed for Vite, to make sure the script is reinjected
+			// when the page reloads.
+			injected = false;
+		},
 
 		transform(code, id) {
 			if (!injected && extensions.some((ext) => extname(id) === `.${ext}`)) {

@@ -2,6 +2,8 @@ import type {Context, ClientServerBody} from '../index.js';
 import {getPort} from './storage.js';
 import {getNodeInformationFromTarget} from './utils.js';
 
+const port = getPort();
+
 document.addEventListener('click', async (event: MouseEvent) => {
 	const composedPath = event.composedPath();
 	if (event.altKey) {
@@ -20,7 +22,6 @@ document.addEventListener('click', async (event: MouseEvent) => {
 		console.log(composedPath, context);
 
 		// We send the information to the connector server
-		const port = getPort();
 		fetch(`http://localhost:${port}/`, {
 			method: 'POST',
 			headers: {'content-type': 'application/json'},
@@ -28,3 +29,5 @@ document.addEventListener('click', async (event: MouseEvent) => {
 		});
 	}
 });
+
+console.log(`VSCode Ui Connector Content Script Loaded! (port: ${port})`);
