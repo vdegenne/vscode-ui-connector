@@ -4,7 +4,7 @@ import {CONTENT_SCRIPT_FILENAME, SERVER_DEFAULT_PORT} from 'shared/constants';
 import {Plugin} from 'rollup';
 import {getPort} from './config.js';
 import {fileURLToPath} from 'url';
-import {dirname} from 'path';
+import {dirname, extname} from 'path';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -12,7 +12,7 @@ const __dirname = dirname(__filename);
 let scriptContent = fs
 	.readFileSync(pathlib.join(__dirname, CONTENT_SCRIPT_FILENAME))
 	.toString();
-const port = getPort();
+const port = await getPort();
 if (port !== SERVER_DEFAULT_PORT) {
 	scriptContent = scriptContent.replace(
 		new RegExp(String(SERVER_DEFAULT_PORT), 'g'),
@@ -20,9 +20,19 @@ if (port !== SERVER_DEFAULT_PORT) {
 	);
 }
 
-// TODO: complete this plugin so `scriptContent` is inserted somewhere in the code during dev.
+const extensions = ['js', 'ts', 'mjs'];
+let injected = false;
+
 export function vscodeUiConnector(): Plugin {
 	return {
 		name: 'vscode-ui-connector',
+
+		transform(code, id) {
+			if (!injected && extensions.some((ext) => extname(id) === `.${ext}`)) {
+				code += `\n\n// Injected content script\n${scriptContent}`;
+				injected = true;
+			}
+			return code;
+		},
 	};
 }

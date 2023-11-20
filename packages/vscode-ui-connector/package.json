@@ -79,5 +79,8 @@
 		"./bin",
 		"./dist",
 		"./out"
-	]
+	],
+	"dependencies": {
+		"get-port": "^7.0.0"
+	}
 }

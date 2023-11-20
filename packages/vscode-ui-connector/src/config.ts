@@ -1,5 +1,6 @@
 import fs from 'fs';
 import {CONFIG_FILENAME, DEFAULT_CONFIG} from './constants.js';
+import _getPort from 'get-port';
 
 export interface ServerOptions {
 	/**
@@ -12,7 +13,7 @@ export interface ServerOptions {
 	include: string | string[];
 }
 
-export function getConfig(): Partial<ServerOptions> | null {
+export function getConfigFile(): Partial<ServerOptions> | null {
 	try {
 		const fileContent = fs.readFileSync(CONFIG_FILENAME);
 		return JSON.parse(fileContent.toString());
@@ -21,13 +22,13 @@ export function getConfig(): Partial<ServerOptions> | null {
 	}
 }
 
-export function getPort(): number {
-	const config = {
-		// default
-		...DEFAULT_CONFIG,
-		// config
-		...(getConfig() ?? {}),
-	};
+export async function getPort(): Promise<number> {
+	const config = getConfigFile() ?? {};
+
+	if (config.port === undefined) {
+		const port = await _getPort();
+		config.port = port;
+	}
 
 	return config.port;
 }

@@ -1,4 +1,4 @@
-import {getConfig} from './config.js';
+import {getConfigFile} from './config.js';
 import {DEFAULT_CONFIG} from './constants.js';
 import {startServer} from './server.js';
 
@@ -7,7 +7,7 @@ export function cli() {
 		// default
 		...DEFAULT_CONFIG,
 		// config
-		...(getConfig() ?? {}),
+		...(getConfigFile() ?? {}),
 	};
 
 	startServer(config);
