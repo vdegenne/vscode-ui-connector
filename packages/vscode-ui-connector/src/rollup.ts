@@ -18,7 +18,7 @@ if (port !== SERVER_DEFAULT_PORT) {
 	);
 }
 
-const SCRIPT_CONTENT_TAG = '@VSUC Injected content script'
+const SCRIPT_CONTENT_TAG = '// @VSUC Injected content script'
 let injectTarget
 
 export function vscodeUiConnector(): Plugin {
@@ -34,7 +34,7 @@ export function vscodeUiConnector(): Plugin {
 
 		transform(code, id) {
 			if (id === injectTarget && !code.includes(SCRIPT_CONTENT_TAG)) {
-				code += `\n\n// ${SCRIPT_CONTENT_TAG}\n${scriptContent}`;
+				code += `\n\n${SCRIPT_CONTENT_TAG}\n${scriptContent}`;
 			}
 			return code;
 		},
