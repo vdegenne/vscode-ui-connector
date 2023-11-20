@@ -2,7 +2,6 @@ import fs from 'fs';
 import pathlib from 'path';
 import {CONTENT_SCRIPT_FILENAME, SERVER_DEFAULT_PORT} from 'shared/constants';
 import {Plugin} from 'rollup';
-import {extname} from 'path';
 import {__dirname} from './utils.js';
 import {resolvePort} from './server.js';
 
@@ -18,13 +17,18 @@ if (port !== SERVER_DEFAULT_PORT) {
 }
 
 let injected = false;
-const extensions = ['js', 'ts'];
+let injectTarget
 
 export function vscodeUiConnector(): Plugin {
 	return {
 		name: 'vscode-ui-connector',
 
-		buildStart() {},
+		buildStart(options) {
+			if (Array.isArray(options.input)) 
+				injectTarget = options.input[0];
+			else
+				injectTarget = options.input;
+		},
 
 		resolveId() {
 			// This is needed for Vite, to make sure the script is reinjected
@@ -33,7 +37,7 @@ export function vscodeUiConnector(): Plugin {
 		},
 
 		transform(code, id) {
-			if (!injected && extensions.some((ext) => extname(id) === `.${ext}`)) {
+			if (id === injectTarget && !injected) {
 				code += `\n\n// Injected content script\n${scriptContent}`;
 				injected = true;
 			}
