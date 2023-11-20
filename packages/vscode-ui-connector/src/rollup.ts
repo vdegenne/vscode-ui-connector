@@ -26,6 +26,7 @@ export function vscodeUiConnector(): Plugin {
 		name: 'vscode-ui-connector',
 
 		buildStart(options) {
+			if (!options.input && !injectTarget) return this.error('No input found, need atleast one.')
 			if (Array.isArray(options.input)) 
 				injectTarget = options.input[0];
 			else
