@@ -16,7 +16,7 @@ if (port !== SERVER_DEFAULT_PORT) {
 	);
 }
 
-let injected = false;
+const SCRIPT_CONTENT_TAG = '@VSUC Injected content script'
 let injectTarget
 
 export function vscodeUiConnector(): Plugin {
@@ -30,16 +30,9 @@ export function vscodeUiConnector(): Plugin {
 				injectTarget = options.input;
 		},
 
-		resolveId() {
-			// This is needed for Vite, to make sure the script is reinjected
-			// when the page reloads.
-			injected = false;
-		},
-
 		transform(code, id) {
-			if (id === injectTarget && !injected) {
-				code += `\n\n// Injected content script\n${scriptContent}`;
-				injected = true;
+			if (id === injectTarget && !code.includes(SCRIPT_CONTENT_TAG)) {
+				code += `\n\n// ${SCRIPT_CONTENT_TAG}\n${scriptContent}`;
 			}
 			return code;
 		},
