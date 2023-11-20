@@ -1,6 +1,8 @@
 import {execSync} from 'child_process';
 import {glob} from 'glob';
 
+export const DEFAULT_GREP_INCLUDE = 'src/**/*.{ts,tsx,js,jsx,html,css}';
+
 interface FoundObject {
 	filepath: string;
 	line: number;

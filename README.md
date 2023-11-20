@@ -1,34 +1,35 @@
+# vscode-ui-connector
+
 ## Installation
 
-### Clone the repository
-
-```
-git clone https://github.com/vdegenne/vscode-ui-connector.git
-```
-
-### Installation the dependencies and build
-
-```
-npm i && npm run build
-```
-
-### Add the extension in your browser
-
-The extension root directory is located at `packages/chrome-extension`
-
-**NOTE: Soon available on the Chrome Store!**
-
-### Install the server module in your project
+Install the npm package
 
 ```
 npm i -D vscode-ui-connector
 ```
 
-Now you can use `npx vscode-ui-connector` (or the short version `npx vuc`) directly from the command line (or `vuc` in your npm scripts.)
+### Content Script
+
+```javascript
+/* rollup.config.js */
+import {vscodeUiConnector} from 'vscode-ui-connector';
+
+export default {
+	plugins: [vscodeUiConnector()],
+};
+```
+
+The content script is injected in your page during development and listen for click events, it builds a context object and sends it to the server to find the best location in your source.
+
+### Server
+
+Use `vscode-ui-connector` in your npm scripts to start the server (or short version `vuc`). You can also use `npx vuc` from the command line. (Running the server as a service using `wireit` is the recommended way.)
+
+_explanation: The server waits for the content script to send a context object, it then uses `grep` to find the best match and attempts to find the best location, and opens it in VSCode._
 
 ## Usage
 
-`Alt + click` on any element in your page to open it in VSCode.
+Use `Alt + click` on any element in your page.
 
 ## License
 

@@ -2,11 +2,40 @@ import Koa from 'koa';
 import KoaRouter from '@koa/router';
 import {bodyParser} from '@koa/bodyparser';
 import cors from '@koa/cors';
-import {ServerOptions} from './config.js';
-import {NodeInformation, propertyPriorityList} from 'shared';
+import {ServerOptions, getUserConfig} from './config.js';
+import {ClientServerBody, Context, propertyPriorityList} from 'shared';
+import {CACHED_PORT_FILEPATH} from 'shared/constants';
 import {grep} from './grep.js';
 import {openFileAtLine} from './vscode.js';
+import fs from 'fs';
 import pathlib from 'path';
+import {convertToWindowsPathIfNecessary} from './utils.js';
+import _getport from 'get-port';
+
+export async function resolvePort(): Promise<number> {
+	let port: number;
+	// We resolve the port value following these priorities
+	// 1. Cached port
+	const portFilePath = convertToWindowsPathIfNecessary(CACHED_PORT_FILEPATH);
+	if (fs.existsSync(portFilePath)) {
+		return parseInt(fs.readFileSync(CACHED_PORT_FILEPATH).toString());
+	}
+	// 2. User-defined port
+	const config = getUserConfig();
+	if (config && config.port) {
+		port = config.port;
+	}
+
+	// 3. Get a random port
+	if (!port) {
+		port = await _getport();
+	}
+
+	// Cache the port
+	fs.writeFile(CACHED_PORT_FILEPATH, `${port}`, () => {});
+
+	return port;
+}
 
 export function startServer(options: ServerOptions) {
 	const app = new Koa();
@@ -16,14 +45,15 @@ export function startServer(options: ServerOptions) {
 	app.use(bodyParser());
 
 	router.post('/', (ctx) => {
-		if (!('infos' in ctx.request.body)) {
+		const body = ctx.request.body as ClientServerBody;
+		if (!('context' in body)) {
 			ctx.throw();
 		}
-		const infos: NodeInformation[] = ctx.request.body.infos;
+		const context: Context = body.context;
 
-		for (const info of infos) {
+		for (const nodeInfo of context) {
 			for (const property of propertyPriorityList) {
-				let search = info[property];
+				let search = nodeInfo[property];
 				if (search === undefined) {
 					continue;
 				}

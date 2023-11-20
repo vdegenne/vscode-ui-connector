@@ -8,6 +8,12 @@ export type NodeInformation = {
 	// parentTagName?: any;
 };
 
+export type Context = NodeInformation[];
+
+export interface ClientServerBody {
+	context: Context;
+}
+
 export const propertyPriorityList: ReadonlyArray<keyof NodeInformation> = [
 	'id',
 	'textContent',

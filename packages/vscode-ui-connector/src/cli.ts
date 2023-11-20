@@ -1,14 +1,10 @@
-import {getConfigFile} from './config.js';
-import {DEFAULT_CONFIG} from './constants.js';
-import {startServer} from './server.js';
+import {ServerOptions, getComposedConfig} from './config.js';
+import {resolvePort, startServer} from './server.js';
 
-export function cli() {
-	const config = {
-		// default
-		...DEFAULT_CONFIG,
-		// config
-		...(getConfigFile() ?? {}),
-	};
+export async function cli() {
+	const config = getComposedConfig();
 
-	startServer(config);
+	config.port = await resolvePort();
+
+	startServer(config as ServerOptions);
 }

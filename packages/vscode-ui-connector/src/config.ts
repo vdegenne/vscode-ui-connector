@@ -1,6 +1,9 @@
 import fs from 'fs';
-import {CONFIG_FILENAME, DEFAULT_CONFIG} from './constants.js';
 import _getPort from 'get-port';
+import {SERVER_DEFAULT_PORT} from 'shared/constants';
+import {DEFAULT_GREP_INCLUDE} from './grep.js';
+
+export const CONFIG_FILENAME = 'vscode-ui-connector.config.json';
 
 export interface ServerOptions {
 	/**
@@ -13,7 +16,15 @@ export interface ServerOptions {
 	include: string | string[];
 }
 
-export function getConfigFile(): Partial<ServerOptions> | null {
+export const DEFAULT_CONFIG: ServerOptions = {
+	port: SERVER_DEFAULT_PORT,
+	include: DEFAULT_GREP_INCLUDE,
+};
+
+/**
+ * Returns user-defined config or null if not found.
+ */
+export function getUserConfig(): Partial<ServerOptions> | null {
 	try {
 		const fileContent = fs.readFileSync(CONFIG_FILENAME);
 		return JSON.parse(fileContent.toString());
@@ -22,13 +33,14 @@ export function getConfigFile(): Partial<ServerOptions> | null {
 	}
 }
 
-export async function getPort(): Promise<number> {
-	const config = getConfigFile() ?? {};
-
-	if (config.port === undefined) {
-		const port = await _getPort();
-		config.port = port;
-	}
-
-	return config.port;
+/**
+ * Returns the config made from combining user-defined config and default values.
+ */
+export function getComposedConfig(): ServerOptions {
+	return {
+		// default
+		...DEFAULT_CONFIG,
+		// config
+		...(getUserConfig() ?? {}),
+	};
 }

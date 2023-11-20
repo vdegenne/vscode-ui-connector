@@ -1,6 +1,6 @@
-import {type NodeInformation} from '../index.js';
+import type {Context, ClientServerBody} from '../index.js';
 import {getPort} from './storage.js';
-import {getInformationObjectFromTarget} from './utils.js';
+import {getNodeInformationFromTarget} from './utils.js';
 
 document.addEventListener('click', async (event: MouseEvent) => {
 	const composedPath = event.composedPath();
@@ -9,24 +9,22 @@ document.addEventListener('click', async (event: MouseEvent) => {
 		event.stopPropagation();
 		event.preventDefault();
 
-		const infos: NodeInformation[] = [];
+		const context: Context = [];
 		for (const target of composedPath) {
-			const info = getInformationObjectFromTarget(target);
-			if (info) {
-				infos.push(info);
+			const nodeInfo = getNodeInformationFromTarget(target);
+			if (nodeInfo) {
+				context.push(nodeInfo);
 			}
 		}
 
-		console.log(composedPath, infos);
+		console.log(composedPath, context);
 
 		// We send the information to the connector server
 		const port = getPort();
 		fetch(`http://localhost:${port}/`, {
 			method: 'POST',
 			headers: {'content-type': 'application/json'},
-			body: JSON.stringify({
-				infos: infos,
-			}),
+			body: JSON.stringify({context} as ClientServerBody),
 		});
 	}
 });

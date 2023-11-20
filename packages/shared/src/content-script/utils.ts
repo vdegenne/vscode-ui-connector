@@ -1,7 +1,7 @@
-import {type NodeInformation} from '../index.js';
 import {IGNORED_ELEMENTS} from '../constants.js';
+import {NodeInformation} from '../index.js';
 
-export function getInformationObjectFromTarget(
+export function getNodeInformationFromTarget(
 	target: EventTarget
 ): NodeInformation | null {
 	if (target instanceof DocumentFragment) {

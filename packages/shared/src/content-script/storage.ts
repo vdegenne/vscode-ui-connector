@@ -1,14 +1,13 @@
-import {SERVER_DEFAULT_PORT} from '../constants.js';
-const HANDLE = 'vscode-ui-connector:port';
+import {LOCAL_STORAGE_HANDLER, SERVER_DEFAULT_PORT} from '../constants.js';
 
 export function getPort() {
-	const storageValue = localStorage.getItem(HANDLE);
+	const storageValue = localStorage.getItem(LOCAL_STORAGE_HANDLER);
 	let port: number;
 	if (storageValue) {
 		port = parseInt(storageValue);
 	} else {
 		port = SERVER_DEFAULT_PORT;
-		localStorage.setItem(HANDLE, String(port));
+		// localStorage.setItem(LOCAL_STORAGE_HANDLER, String(port));
 	}
 	return port;
 }
