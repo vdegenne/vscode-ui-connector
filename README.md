@@ -19,7 +19,7 @@ export default {
 };
 ```
 
-The content script is injected in your page during development and listen for click events, it builds a context object and sends it to the server to find the best location in your source.
+_explanation: The content script is injected in your page during development and listen for click events, it builds a context object and sends it to the server to find the best location in your source._
 
 ### Server
 
