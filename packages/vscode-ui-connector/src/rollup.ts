@@ -30,6 +30,7 @@ export function vscodeUiConnector(): Plugin {
 				injectTarget = options.input[0];
 			else
 				injectTarget = options.input;
+			return
 		},
 
 		transform(code, id) {
