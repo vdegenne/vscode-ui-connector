@@ -23,7 +23,7 @@ let injectTarget
 
 export function vscodeUiConnector(): Plugin {
 	return {
-		name: 'vscode-ui-connector',
+		name: 'rollup-plugin-vscode-ui-connector',
 
 		buildStart(options) {
 			if (!options.input && !injectTarget) return this.error('No input found, need atleast one.')
