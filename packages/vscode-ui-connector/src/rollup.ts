@@ -28,6 +28,8 @@ export function vscodeUiConnector(): Plugin {
 			if (!options.input && !injectTarget) return this.error('No input found, need atleast one.')
 			if (Array.isArray(options.input)) 
 				injectTarget = options.input[0];
+			else if (typeof options.input === 'object')
+				injectTarget = Object.values(options.input)[0]
 			else
 				injectTarget = options.input;
 			return
