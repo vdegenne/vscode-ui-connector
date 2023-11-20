@@ -6,6 +6,8 @@ import {__dirname} from './utils.js';
 import {resolvePort} from './server.js';
 
 const port = await resolvePort();
+const SCRIPT_CONTENT_TAG = '// @VSUC Injected content script'
+let injectTarget: string
 
 let scriptContent = (await readFile(
 	join(__dirname, CONTENT_SCRIPT_FILENAME)
@@ -17,9 +19,6 @@ if (port !== SERVER_DEFAULT_PORT) {
 		String(port)
 	);
 }
-
-const SCRIPT_CONTENT_TAG = '// @VSUC Injected content script'
-let injectTarget
 
 export function vscodeUiConnector(): Plugin {
 	return {
