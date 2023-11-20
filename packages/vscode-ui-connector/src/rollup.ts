@@ -1,14 +1,16 @@
-import fs from 'fs';
-import pathlib from 'path';
+import {readFile} from 'fs/promises';
+import {join} from 'path';
 import {CONTENT_SCRIPT_FILENAME, SERVER_DEFAULT_PORT} from 'shared/constants';
 import {Plugin} from 'rollup';
 import {__dirname} from './utils.js';
 import {resolvePort} from './server.js';
 
-let scriptContent = fs
-	.readFileSync(pathlib.join(__dirname, CONTENT_SCRIPT_FILENAME))
-	.toString();
 const port = await resolvePort();
+
+let scriptContent = (await readFile(
+	join(__dirname, CONTENT_SCRIPT_FILENAME)
+)).toString()
+	
 if (port !== SERVER_DEFAULT_PORT) {
 	scriptContent = scriptContent.replace(
 		new RegExp(String(SERVER_DEFAULT_PORT), 'g'),
