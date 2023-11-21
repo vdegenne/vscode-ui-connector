@@ -3,14 +3,15 @@ import KoaRouter from '@koa/router';
 import {bodyParser} from '@koa/bodyparser';
 import cors from '@koa/cors';
 import {ServerOptions, getUserConfig} from './config.js';
-import {ClientServerBody, Context, propertyPriorityList} from 'shared';
-import {CACHED_PORT_FILEPATH} from 'shared/constants';
-import {grep} from './grep.js';
+import {ClientServerBody} from 'shared';
+import {CACHED_DIRECTORY, CACHED_PORT_FILEPATH} from 'shared/constants';
+import {grep} from './search/grep.js';
 import {openFileAtLine} from './vscode.js';
 import fs from 'fs';
 import pathlib from 'path';
 import {convertToWindowsPathIfNecessary} from './utils.js';
 import _getport from 'get-port';
+import {search} from './search/search.js';
 
 export async function resolvePort(): Promise<number> {
 	let port: number;
@@ -32,7 +33,10 @@ export async function resolvePort(): Promise<number> {
 	}
 
 	// Cache the port
-	fs.writeFile(CACHED_PORT_FILEPATH, `${port}`, () => {});
+	if (!fs.existsSync(CACHED_DIRECTORY)) {
+		await fs.promises.mkdir(CACHED_DIRECTORY);
+	}
+	fs.promises.writeFile(CACHED_PORT_FILEPATH, `${port}`);
 
 	return port;
 }
@@ -44,44 +48,62 @@ export function startServer(options: ServerOptions) {
 	app.use(cors());
 	app.use(bodyParser());
 
-	router.post('/', (ctx) => {
+	router.post('/', async (ctx) => {
 		const body = ctx.request.body as ClientServerBody;
-		if (!('context' in body)) {
+		if (!body.context) {
 			ctx.throw();
 		}
-		const context: Context = body.context;
 
-		for (const nodeInfo of context) {
-			for (const property of propertyPriorityList) {
-				let search = nodeInfo[property];
-				if (search === undefined) {
-					continue;
-				}
-				if (property === 'tagName') {
-					search = `<${search}`;
-				}
-				if (property === 'id') {
-					search = `id="${search}"`;
-				}
-				if (property === 'classText') {
-					search = `class="${search}"`;
-				}
-				if (property === 'styleText') {
-					search = `style="${search}"`;
-				}
-				const grepResult = grep(search, options.include);
-				if (grepResult.length === 1) {
-					const result = grepResult[0];
-					// We have a good match because it's unique, we can open the file
-					openFileAtLine(
-						pathlib.resolve(result.filepath),
-						result.line,
-						result.column + 1
-					);
-					return (ctx.body = '');
-				}
-			}
+		try {
+			const [result] = await search(
+				body.context, //
+				[
+					'tagName',
+					'textContent',
+					'attributes.id',
+					'attributes.style',
+					'attributes',
+				],
+				(search) => grep(search, options.include)
+			);
+
+			openFileAtLine(result.filepath, result.line, result.column);
+		} catch (err) {
+			// Nothing was found.
+			console.log('nothing was found');
 		}
+
+		// for (const nodeInfo of body.context) {
+		// 	for (const property of attributePriorityList) {
+		// 		let search = nodeInfo[property];
+		// 		if (search === undefined) {
+		// 			continue;
+		// 		}
+		// 		if (property === 'tagName') {
+		// 			search = `<${search}`;
+		// 		}
+		// 		if (property === 'id') {
+		// 			search = `id="${search}"`;
+		// 		}
+		// 		if (property === 'classText') {
+		// 			search = `class="${search}"`;
+		// 		}
+		// 		if (property === 'styleText') {
+		// 			search = `style="${search}"`;
+		// 		}
+		// 		const grepResult = grep(search, options.include);
+		// 		if (grepResult.length === 1) {
+		// 			const result = grepResult[0];
+		// 			// We have a good match because it's unique, we can open the file
+		// 			openFileAtLine(
+		// 				pathlib.resolve(result.filepath),
+		// 				result.line,
+		// 				result.column + 1
+		// 			);
+		// 			return (ctx.body = '');
+		// 		}
+		// 	}
+		// }
 	});
 
 	app.use(router.allowedMethods()).use(router.routes());

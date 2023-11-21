@@ -1,7 +1,7 @@
 import fs from 'fs';
 import _getPort from 'get-port';
 import {SERVER_DEFAULT_PORT} from 'shared/constants';
-import {DEFAULT_GREP_INCLUDE} from './grep.js';
+import {DEFAULT_GREP_INCLUDE} from './search/grep.js';
 
 export const CONFIG_FILENAME = 'vscode-ui-connector.config.json';
 

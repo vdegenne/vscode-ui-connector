@@ -1,9 +1,9 @@
 import {IGNORED_ELEMENTS} from '../constants.js';
-import {NodeInformation} from '../index.js';
+import {Context, DevInformation, NodeInformation} from '../context.js';
 
 export function getNodeInformationFromTarget(
 	target: EventTarget
-): NodeInformation | null {
+): (NodeInformation & DevInformation) | null {
 	if (target instanceof DocumentFragment) {
 		return null;
 	}
@@ -25,21 +25,17 @@ export function getNodeInformationFromTarget(
 			}
 		}
 
-		// Start composing info object
-		const tagName = node.tagName.toLocaleLowerCase();
-		const id = node.getAttribute('id');
-		const textContent = node.textContent.trim();
-		const classText = node.getAttribute('class');
-		// const cssText = (node as HTMLElement).style.cssText;
-		const styleText = node.getAttribute('style');
-		const className = node.className;
+		// Composed context object
 		return {
-			tagName,
-			...(id ? {id} : {}),
-			...(textContent ? {textContent} : {}),
-			...(classText ? {classText} : {}),
-			...(styleText ? {styleText} : {}),
-			...(className ? {className} : {}),
+			tagName: node.tagName.toLocaleLowerCase(),
+			textContent: node.textContent,
+			attributes: Object.fromEntries(
+				[...node.attributes].map((attribute) => [
+					attribute.name,
+					attribute.value,
+				])
+			),
+			// node,
 		};
 	}
 }

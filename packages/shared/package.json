@@ -6,8 +6,8 @@
 	"license": "MIT",
 	"exports": {
 		".": {
-			"import": "./out/index.js",
-			"types": "./out/index.d.ts"
+			"import": "./out/context.js",
+			"types": "./out/context.d.ts"
 		},
 		"./constants": {
 			"import": "./out/constants.js",

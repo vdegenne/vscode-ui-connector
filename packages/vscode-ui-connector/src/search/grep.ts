@@ -1,37 +1,32 @@
 import {execSync} from 'child_process';
 import {glob} from 'glob';
+import {Search, SearchMatch} from './search.js';
 
 export const DEFAULT_GREP_INCLUDE = 'src/**/*.{ts,tsx,js,jsx,html,css}';
 
-interface FoundObject {
-	filepath: string;
-	line: number;
-	column: number;
-	lineContent?: string;
-}
-
 export function grep(
-	search: string,
+	search: Search,
 	include: string | string[]
-): FoundObject[] {
+): SearchMatch[] {
 	const files = glob.sync(include);
 
 	if (files.length === 0) {
 		return [];
 	}
 
-	const grepCommand = `grep -rn '${search}' ${files.join(' ')}`;
+	const grepCommand = `grep -rn '${search.query}' ${files.join(' ')}`;
 
 	try {
 		const grepOutput = execSync(grepCommand, {encoding: 'utf-8'});
 		const lines = grepOutput.split('\n').filter((line) => line !== '');
 
-		const foundObjects: FoundObject[] = lines.map((grepLine) => {
+		const foundObjects: SearchMatch[] = lines.map((grepLine) => {
 			const [filepath, line, lineContent] = grepLine.split(':');
-			const foundObject: FoundObject = {
+			const foundObject: SearchMatch = {
 				filepath,
 				line: parseInt(line),
-				column: lineContent.indexOf(search),
+				column: lineContent.indexOf(search.query) + 1,
+				nodeInformation: search.node,
 				lineContent,
 			};
 			return foundObject;
