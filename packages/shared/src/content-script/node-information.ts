@@ -47,7 +47,9 @@ export function getNodeInformationFromTarget(
 		if (typeIndex >= 0) {
 			nodeInfo.typeIndex = typeIndex;
 		}
-		if (!IGNORED_ELEMENTS.includes(nodeInfo.tagName)) {
+		if (
+			!IGNORED_ELEMENTS.some((ignored) => nodeInfo.tagName.startsWith(ignored))
+		) {
 			const classHierarchy = [...new Set(getHierarchy(node))].filter(
 				(className) =>
 					!IGNORED_CLASSES.some((ignored) => className.startsWith(ignored))
