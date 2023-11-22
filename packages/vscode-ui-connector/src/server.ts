@@ -3,7 +3,7 @@ import KoaRouter from '@koa/router';
 import {bodyParser} from '@koa/bodyparser';
 import cors from '@koa/cors';
 import {ServerOptions, getUserConfig} from './config.js';
-import {ClientServerBody} from 'shared';
+import {ClientServerBody, SearchSchema} from 'shared';
 import {CACHED_DIRECTORY, CACHED_PORT_FILEPATH} from 'shared/constants';
 import {grep} from './search/grep.js';
 import {openFileAtLine} from './vscode.js';
@@ -12,6 +12,7 @@ import pathlib from 'path';
 import {convertToWindowsPathIfNecessary} from './utils.js';
 import _getport from 'get-port';
 import {search} from './search/search.js';
+import {fileSearch} from './search/fileSearch.js';
 
 export async function resolvePort(): Promise<number> {
 	let port: number;
@@ -54,56 +55,67 @@ export function startServer(options: ServerOptions) {
 			ctx.throw();
 		}
 
+		const schema: SearchSchema = [
+			'tagName',
+			'textContent',
+			'attributes.id',
+			'attributes.style',
+			'attributes.class',
+			'attributes',
+			'classHierarchy',
+		];
+
 		try {
-			const [result] = await search(
-				body.context, //
-				[
-					'tagName',
-					'textContent',
-					'attributes.id',
-					'attributes.style',
-					'attributes',
-				],
-				(search) => grep(search, options.include)
+			// 1. We grep search all source files for a unique result.
+			let result = await search(body.context, schema, (search) =>
+				grep(search, options.include)
 			);
 
-			openFileAtLine(result.filepath, result.line, result.column);
+			const match = result.matches[0];
+
+			const nodeIndex = body.context.indexOf(result.search.node);
+			if (nodeIndex === 0) {
+				// We found the most close match
+				openFileAtLine(match.filepath, match.line, match.column);
+				return (ctx.body = '');
+			}
+
+			// Continue the search to find a more precise location.
+			const narrowedContext = body.context.slice(0, nodeIndex);
+
+			// 2. We try to find a better match for each child
+			for (const child of narrowedContext) {
+				if (child.typeIndex !== undefined) {
+					try {
+						const result = await search(
+							[child],
+							['tagName'],
+							(search) => fileSearch(search, match.filepath, match.line),
+							(result) => {
+								if (result.matches.length > 1) {
+									return true;
+								}
+							}
+						);
+
+						if (child.typeIndex <= result.matches.length) {
+							const match = result.matches[child.typeIndex];
+							openFileAtLine(match.filepath, match.line, match.column);
+							return (ctx.body = '');
+						}
+					} catch (err) {}
+				}
+				try {
+				} catch (err) {}
+			}
+
+			// If nothing was more precisly found we focus first match
+			openFileAtLine(match.filepath, match.line, match.column);
+			return (ctx.body = '');
 		} catch (err) {
 			// Nothing was found.
 			console.log('nothing was found');
 		}
-
-		// for (const nodeInfo of body.context) {
-		// 	for (const property of attributePriorityList) {
-		// 		let search = nodeInfo[property];
-		// 		if (search === undefined) {
-		// 			continue;
-		// 		}
-		// 		if (property === 'tagName') {
-		// 			search = `<${search}`;
-		// 		}
-		// 		if (property === 'id') {
-		// 			search = `id="${search}"`;
-		// 		}
-		// 		if (property === 'classText') {
-		// 			search = `class="${search}"`;
-		// 		}
-		// 		if (property === 'styleText') {
-		// 			search = `style="${search}"`;
-		// 		}
-		// 		const grepResult = grep(search, options.include);
-		// 		if (grepResult.length === 1) {
-		// 			const result = grepResult[0];
-		// 			// We have a good match because it's unique, we can open the file
-		// 			openFileAtLine(
-		// 				pathlib.resolve(result.filepath),
-		// 				result.line,
-		// 				result.column + 1
-		// 			);
-		// 			return (ctx.body = '');
-		// 		}
-		// 	}
-		// }
 	});
 
 	app.use(router.allowedMethods()).use(router.routes());

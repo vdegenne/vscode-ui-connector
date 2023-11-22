@@ -4,7 +4,6 @@ export interface SearchMatch {
 	filepath: string;
 	line: number;
 	column: number;
-	nodeInformation: NodeInformation;
 	lineContent?: string;
 }
 
@@ -13,32 +12,37 @@ export interface Search {
 	node: NodeInformation;
 }
 
-type SearchResolve = (result: SearchMatch[]) => void;
-type SearchMethod = (search: Search) => Promise<SearchMatch[]> | SearchMatch[];
-type SearchStop = (
-	result: SearchMatch[],
-	resolve: SearchResolve
-) => boolean | undefined;
+export interface SearchResult {
+	matches: SearchMatch[];
+	search: Search;
+}
+
+type SearchResolve = (result: SearchResult) => void;
+type SearchMethod = (search: Search) => Promise<SearchResult> | SearchResult;
+type SearchStop = (result: SearchResult) => boolean | undefined;
 
 export function search(
 	context: Context,
 	searchSchema: SearchSchema,
 	searchMethod: SearchMethod,
 	searchStop?: SearchStop
-): Promise<SearchMatch[]> {
+): Promise<SearchResult> {
 	return new Promise(async (resolve, reject) => {
 		if (!searchStop) {
 			// By default we want to resolve only if there is a unique match.
-			searchStop = function (result, resolve) {
-				if (result.length === 1) {
-					resolve(result);
+			searchStop = function (result) {
+				if (result.matches.length === 1) {
 					return true;
 				}
 			};
 		}
 		async function _search(search: Search) {
 			const result = await searchMethod(search);
-			return searchStop(result, resolve);
+			if (searchStop(result)) {
+				resolve(result);
+				return true;
+			}
+			return false;
 		}
 
 		for (const node of context) {
@@ -53,7 +57,8 @@ export function search(
 					searches.push({query: `<${node.tagName}`, node});
 				}
 				// TEXT-CONTENT
-				else if (property === 'textContent' && node.textContent) {
+				else if (property === 'textContent') {
+					if (!node.textContent) continue;
 					searches = [{query: node.textContent, node}]; // as-is
 				}
 				// ATTRIBUTES
@@ -73,6 +78,20 @@ export function search(
 						query: `${attrName}="${node.attributes[attrName]}"`,
 						node,
 					});
+				}
+				// CLASS HIERARCHY
+				else if (property === 'classHierarchy') {
+					if (!node.classHierarchy) continue;
+					for (const className of node.classHierarchy) {
+						searches.push({
+							query: `class ${className}`,
+							node,
+						});
+						searches.push({
+							query: `extends ${className}`,
+							node,
+						});
+					}
 				}
 
 				if (searches) {
@@ -124,4 +143,5 @@ function resolveSchemaForNode(schema: SearchSchema, node: NodeInformation) {
 			return schema;
 		}, [] as SearchSchema);
 	}
+	return schema;
 }

@@ -4,7 +4,7 @@ import {
 	cleanContextObject,
 } from '../context.js';
 import {getPort} from './storage.js';
-import {getNodeInformationFromTarget} from './utils.js';
+import {getNodeInformationFromTarget} from './node-information.js';
 
 const port = getPort();
 

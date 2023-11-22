@@ -5,8 +5,15 @@ export type NodeInformation = {
 	tagName: string;
 	attributes: AttributesProperty;
 	textContent?: string;
-	// parentTagName?: any;
+	/**
+	 * If parent contains more than one element of the same type,
+	 * this property will assume node position in the group.
+	 */
+	typeIndex?: number;
+	classHierarchy?: string[];
 };
+
+export const typesToExcludeFromTypeIndex = ['div', 'span'];
 
 export type DevInformation = {
 	node?: Element;
@@ -18,15 +25,19 @@ export interface ClientServerBody {
 	context: Context;
 }
 
-type SearchSchemaValue =
+type LooseAutoComplete<T extends string> = T | Omit<string, T>;
+
+type SearchSchemaValue = LooseAutoComplete<
 	| 'tagName'
 	| 'textContent'
 	| 'attributes'
 	| 'attributes.id'
 	| 'attributes.class'
-	| 'attributes.style';
+	| 'attributes.style'
+	| 'classHierarchy'
+>;
 
-export type SearchSchema = (SearchSchemaValue | string)[];
+export type SearchSchema = SearchSchemaValue[];
 
 /**
  * Remove undefined, null, empty arrays, etc.. from object.
