@@ -1,6 +1,6 @@
 {
 	"name": "vscode-ui-connector",
-	"version": "0.0.4",
+	"version": "0.0.5",
 	"author": "Valentin Degenne <vdegenne@gmail.com>",
 	"license": "MIT",
 	"type": "module",
@@ -22,8 +22,7 @@
 		"build": {
 			"dependencies": [
 				"build:ts",
-				"build:dist",
-				"copy-content-script"
+				"build:dist"
 			]
 		},
 		"build:ts": {
@@ -48,15 +47,6 @@
 			],
 			"dependencies": [
 				"build:ts"
-			]
-		},
-		"copy-content-script": {
-			"command": "echo 'to implement'",
-			"dependencies": [
-				"build:dist"
-			],
-			"output": [
-				"./out/content-script.js"
 			]
 		}
 	},
