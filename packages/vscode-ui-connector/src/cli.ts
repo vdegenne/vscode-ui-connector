@@ -1,5 +1,5 @@
-import {ServerOptions, getComposedConfig} from './config.js';
-import {resolvePort, startServer} from './server.js';
+import {ServerOptions, getComposedConfig, resolvePort} from './config.js';
+import {startServer} from './server.js';
 
 export async function cli() {
 	const config = getComposedConfig();

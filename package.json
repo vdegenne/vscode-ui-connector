@@ -10,15 +10,16 @@
 	"wireit": {
 		"build": {
 			"dependencies": [
-				"./packages/shared:build",
-				"./packages/chrome-extension:build",
-				"./packages/vscode-ui-connector:build"
+				"./packages/vscode-ui-connector:build",
+				"./packages/chrome-extension:build"
 			]
 		}
 	},
 	"devDependencies": {
 		"@changesets/cli": "^2.26.2",
+		"@rollup/plugin-node-resolve": "^15.2.3",
 		"@rollup/plugin-terser": "^0.4.4",
+		"@rollup/plugin-typescript": "^11.1.5",
 		"rollup": "^4.5.0",
 		"tslib": "^2.6.2",
 		"typescript": "^5.2.2",

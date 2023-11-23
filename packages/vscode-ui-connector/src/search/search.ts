@@ -1,4 +1,4 @@
-import {Context, NodeInformation, SearchSchema} from 'shared';
+import {Context, NodeInformation, SearchSchema} from '../context.js';
 
 export interface SearchMatch {
 	filepath: string;

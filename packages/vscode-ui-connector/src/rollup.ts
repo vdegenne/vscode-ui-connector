@@ -1,10 +1,18 @@
 import fs from 'fs';
 import pathlib from 'path';
-import {CONTENT_SCRIPT_FILENAME, SERVER_DEFAULT_PORT} from 'shared/constants';
+import {SERVER_DEFAULT_PORT} from './constants.js';
 import {ResolvedConfig, Plugin as VitePlugin} from 'vite';
 import {extname} from 'path';
-import {__dirname, injectScriptIntoHTML} from './utils.js';
-import {resolvePort} from './server.js';
+import {injectScriptIntoHTML} from './utils.js';
+import {resolvePort} from './config.js';
+import {__dirname} from './path.js';
+
+export const CONTENT_SCRIPT_FILEPATH = pathlib.join(
+	__dirname,
+	'..',
+	'dist',
+	'content-script.js'
+);
 
 interface VscodeUiConnectorPluginOptions {
 	/**
@@ -18,9 +26,7 @@ interface VscodeUiConnectorPluginOptions {
 export async function vscodeUiConnectorPlugin(
 	options: Partial<VscodeUiConnectorPluginOptions> = {}
 ): Promise<VitePlugin> {
-	let contentScript = fs
-		.readFileSync(pathlib.join(__dirname, CONTENT_SCRIPT_FILENAME))
-		.toString();
+	let contentScript = fs.readFileSync(CONTENT_SCRIPT_FILEPATH).toString();
 	const port = await resolvePort();
 	if (port !== SERVER_DEFAULT_PORT) {
 		contentScript = contentScript.replace(

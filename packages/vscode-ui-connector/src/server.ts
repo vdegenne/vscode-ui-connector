@@ -2,45 +2,12 @@ import Koa from 'koa';
 import KoaRouter from '@koa/router';
 import {bodyParser} from '@koa/bodyparser';
 import cors from '@koa/cors';
-import {ServerOptions, getUserConfig} from './config.js';
-import {ClientServerBody, SearchSchema} from 'shared';
-import {CACHED_DIRECTORY, CACHED_PORT_FILEPATH} from 'shared/constants';
+import {ServerOptions} from './config.js';
+import {ClientServerBody, SearchSchema} from './context.js';
 import {grep} from './search/grep.js';
 import {openFileAtLine} from './vscode.js';
-import fs from 'fs';
-import pathlib from 'path';
-import {convertToWindowsPathIfNecessary} from './utils.js';
-import _getport from 'get-port';
 import {search} from './search/search.js';
 import {fileSearch} from './search/fileSearch.js';
-
-export async function resolvePort(): Promise<number> {
-	let port: number;
-	// We resolve the port value following these priorities
-	// 1. Cached port
-	const portFilePath = convertToWindowsPathIfNecessary(CACHED_PORT_FILEPATH);
-	if (fs.existsSync(portFilePath)) {
-		return parseInt(fs.readFileSync(CACHED_PORT_FILEPATH).toString());
-	}
-	// 2. User-defined port
-	const config = getUserConfig();
-	if (config && config.port) {
-		port = config.port;
-	}
-
-	// 3. Get a random port
-	if (!port) {
-		port = await _getport();
-	}
-
-	// Cache the port
-	if (!fs.existsSync(CACHED_DIRECTORY)) {
-		await fs.promises.mkdir(CACHED_DIRECTORY);
-	}
-	fs.promises.writeFile(CACHED_PORT_FILEPATH, `${port}`);
-
-	return port;
-}
 
 export function startServer(options: ServerOptions) {
 	const app = new Koa();

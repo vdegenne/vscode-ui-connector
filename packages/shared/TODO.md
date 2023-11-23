@@ -1,3 +1,0 @@
-- When clicking the action icon, the page should require another port to be used.
-- $0.constructor.name : send full class line.
-- Once a file is find, search for the correct tag around shallow found.

@@ -10,9 +10,9 @@
 	"wireit": {
 		"build": {
 			"#comment": "Just copy the content script",
-			"command": "mkdir dist && cp ../shared/dist/content-script.js ./dist/index.js",
+			"command": "mkdir dist && cp ../vscode-ui-connector/dist/content-script.js ./dist/index.js",
 			"dependencies": [
-				"../shared:build"
+				"../vscode-ui-connector:build"
 			],
 			"output": [
 				"./dist"

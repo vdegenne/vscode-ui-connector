@@ -16,6 +16,4 @@ export const IGNORED_CLASSES = [
 	'Md',
 ];
 
-export const CONTENT_SCRIPT_FILENAME = 'content-script.js';
-
 export const LOCAL_STORAGE_HANDLER = 'vscode-ui-connector:port';
