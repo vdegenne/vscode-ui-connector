@@ -1,4 +1,4 @@
-import {IGNORED_CLASSES, IGNORED_ELEMENTS} from '../constants.js';
+import {IGNORED_CLASSES, IGNORED_SHADOW_DOMS} from '../constants.js';
 import {
 	Context,
 	DevInformation,
@@ -19,13 +19,17 @@ export function getNodeInformationFromTarget(
 			return null;
 		}
 		// We make sure we are not inside the shadowDom of ignored elements.
+		const ignoredShadowDoms = IGNORED_SHADOW_DOMS.concat(
+			window.VUC?.ignoredShadowDoms ?? []
+		);
 		const rootNode = node.getRootNode();
-		let parentTagName: string;
 		if (rootNode instanceof DocumentFragment) {
 			// We're inside a shadow
-			parentTagName = (rootNode as ShadowRoot).host.tagName.toLocaleLowerCase();
+			const parentTagName = (
+				rootNode as ShadowRoot
+			).host.tagName.toLocaleLowerCase();
 
-			if (IGNORED_ELEMENTS.some((name) => parentTagName.startsWith(name))) {
+			if (ignoredShadowDoms.some((name) => parentTagName.startsWith(name))) {
 				return null;
 			}
 		}
@@ -40,15 +44,13 @@ export function getNodeInformationFromTarget(
 					attribute.value,
 				])
 			),
-			// ...(typeIndex >= 0 ? {typeIndex} : {}),
-			// classHierarchy: getHierarchy(node),
 		};
 		const typeIndex = getTypeIndex(node);
 		if (typeIndex >= 0) {
 			nodeInfo.typeIndex = typeIndex;
 		}
 		if (
-			!IGNORED_ELEMENTS.some((ignored) => nodeInfo.tagName.startsWith(ignored))
+			!ignoredShadowDoms.some((ignored) => nodeInfo.tagName.startsWith(ignored))
 		) {
 			const classHierarchy = [...new Set(getHierarchy(node))].filter(
 				(className) =>

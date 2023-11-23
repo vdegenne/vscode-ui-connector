@@ -10,11 +10,11 @@ export default {
 		file: 'dist/cli.js',
 	},
 	plugins: [
-		cjs(),
-		json(),
 		// nodeResolve({
 		// 	resolveOnly: ['shared'],
 		// }),
+		cjs(),
+		json(),
 		nodeResolve(),
 		terser(),
 	],

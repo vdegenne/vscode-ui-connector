@@ -104,9 +104,20 @@ export function startServer(options: ServerOptions) {
 							return (ctx.body = '');
 						}
 					} catch (err) {}
+				} else {
+					try {
+						const result = await search([child], ['textContent'], (search) =>
+							fileSearch(search, match.filepath, match.line)
+						);
+
+						openFileAtLine(
+							result.matches[0].filepath,
+							result.matches[0].line,
+							result.matches[0].column
+						);
+						return (ctx.body = '');
+					} catch (err) {}
 				}
-				try {
-				} catch (err) {}
 			}
 
 			// If nothing was more precisly found we focus first match

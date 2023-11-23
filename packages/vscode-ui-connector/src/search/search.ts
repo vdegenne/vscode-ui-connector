@@ -59,7 +59,8 @@ export function search(
 				// TEXT-CONTENT
 				else if (property === 'textContent') {
 					if (!node.textContent) continue;
-					searches = [{query: node.textContent, node}]; // as-is
+					searches.push({query: node.textContent, node}); // as-is
+					searches.push({query: `>${node.textContent}<`, node});
 				}
 				// ATTRIBUTES
 				else if (property.startsWith('attributes.')) {
@@ -84,11 +85,11 @@ export function search(
 					if (!node.classHierarchy) continue;
 					for (const className of node.classHierarchy) {
 						searches.push({
-							query: `class ${className}`,
+							query: `class ${className} `,
 							node,
 						});
 						searches.push({
-							query: `extends ${className}`,
+							query: `extends ${className} `,
 							node,
 						});
 					}

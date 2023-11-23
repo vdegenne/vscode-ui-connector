@@ -6,6 +6,14 @@ import {
 import {getPort} from './storage.js';
 import {getNodeInformationFromTarget} from './node-information.js';
 
+declare global {
+	interface Window {
+		VUC?: {
+			ignoredShadowDoms?: string[];
+		};
+	}
+}
+
 const port = getPort();
 
 document.addEventListener('click', async (event: MouseEvent) => {

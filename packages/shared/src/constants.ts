@@ -4,7 +4,7 @@ export const CACHED_DIRECTORY = 'node_modules/.cache';
 
 export const CACHED_PORT_FILEPATH = `${CACHED_DIRECTORY}/vscode-ui-connector-port`;
 
-export const IGNORED_ELEMENTS = ['mwc-', 'md-'];
+export const IGNORED_SHADOW_DOMS = ['mwc-', 'md-'];
 export const IGNORED_CLASSES = [
 	'HTML',
 	'Element',
