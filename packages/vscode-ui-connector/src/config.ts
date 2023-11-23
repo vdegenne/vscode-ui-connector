@@ -3,9 +3,8 @@ import _getPort from 'get-port';
 import {
 	CACHED_DIRECTORY,
 	CACHED_PORT_FILEPATH,
-	SERVER_DEFAULT_PORT,
+	DEFAULT_CONFIG,
 } from './constants.js';
-import {DEFAULT_GREP_INCLUDE} from './search/grep.js';
 import {convertToWindowsPathIfNecessary} from './path.js';
 
 export const CONFIG_FILENAME = 'vscode-ui-connector.config.json';
@@ -20,11 +19,6 @@ export interface ServerOptions {
 	 */
 	include: string | string[];
 }
-
-export const DEFAULT_CONFIG: ServerOptions = {
-	port: SERVER_DEFAULT_PORT,
-	include: DEFAULT_GREP_INCLUDE,
-};
 
 /**
  * Returns user-defined config or null if not found.

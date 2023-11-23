@@ -2,8 +2,6 @@ import {execSync} from 'child_process';
 import {glob} from 'glob';
 import {Search, SearchMatch, SearchResult} from './search.js';
 
-export const DEFAULT_GREP_INCLUDE = 'src/**/*.{ts,tsx,js,jsx,html,css}';
-
 export function grep(search: Search, include: string | string[]): SearchResult {
 	const result: SearchResult = {
 		search,

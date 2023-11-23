@@ -1,3 +1,5 @@
+import {ServerOptions} from './config.js';
+
 export const SERVER_DEFAULT_PORT = 53874;
 
 export const CACHED_DIRECTORY = 'node_modules/.cache';
@@ -17,3 +19,10 @@ export const IGNORED_CLASSES = [
 ];
 
 export const LOCAL_STORAGE_HANDLER = 'vscode-ui-connector:port';
+
+export const DEFAULT_GREP_INCLUDE = 'src/**/*.{ts,tsx,js,jsx,html,css}';
+
+export const DEFAULT_CONFIG: ServerOptions = {
+	port: SERVER_DEFAULT_PORT,
+	include: DEFAULT_GREP_INCLUDE,
+};
