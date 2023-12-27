@@ -2,10 +2,11 @@ import fs from 'fs';
 import pathlib from 'path';
 import {SERVER_DEFAULT_PORT} from './constants.js';
 import {ResolvedConfig, Plugin as VitePlugin} from 'vite';
-import {extname} from 'path';
 import {injectScriptIntoHTML} from './utils.js';
 import {resolvePort} from './config.js';
-import {__dirname} from './path.js';
+import {fileURLToPath} from 'url';
+
+const __dirname = pathlib.dirname(fileURLToPath(import.meta.url));
 
 export const CONTENT_SCRIPT_FILEPATH = pathlib.join(
 	__dirname,
@@ -48,8 +49,9 @@ export async function vscodeUiConnectorPlugin(
      ${contentScript}
      `;
 
-	let injected: boolean;
 	const extensions = ['html', 'js', 'ts'];
+
+	let injectedIn: string;
 
 	let viteConfig: ResolvedConfig | undefined;
 
@@ -67,22 +69,19 @@ export async function vscodeUiConnectorPlugin(
 			}
 		},
 
-		buildStart() {
-			injected = false;
-		},
-
 		transform(code, id) {
 			if (viteConfig) {
 				return null;
 			}
-			const extension = extname(id).slice(1);
-			if (!injected && extensions.some((ext) => extension === ext)) {
-				if (extension === 'html') {
+			const ext = pathlib.extname(id).slice(1);
+			if ((!injectedIn || id === injectedIn) && extensions.includes(ext)) {
+				if (ext === 'html') {
 					code = injectScriptIntoHTML(code, contentScript);
 				} else {
 					code += `\n\n// Injected content script\n${contentScript}`;
 				}
-				injected = true;
+
+				injectedIn = id;
 			}
 			return code;
 		},
