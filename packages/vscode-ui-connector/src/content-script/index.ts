@@ -10,6 +10,7 @@ declare global {
 	interface Window {
 		VUC?: {
 			ignoredShadowDoms?: string[];
+			debug?: boolean;
 		};
 	}
 }
@@ -31,10 +32,14 @@ document.addEventListener('click', async (event: MouseEvent) => {
 			}
 		}
 
-		console.log(composedPath);
-		console.log(JSON.parse(JSON.stringify(context)));
+		if (window.VUC?.debug) {
+			console.log(composedPath);
+			console.log(JSON.parse(JSON.stringify(context)));
+		}
 		context = cleanContextObject(context);
-		console.log(JSON.parse(JSON.stringify(context)));
+		if (window.VUC?.debug) {
+			console.log(JSON.parse(JSON.stringify(context)));
+		}
 
 		// We send the information to the connector server
 		fetch(`http://localhost:${port}/`, {

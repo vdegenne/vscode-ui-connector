@@ -73,8 +73,10 @@ export function startServer(options: ServerOptions) {
 					} catch (err) {}
 				} else {
 					try {
-						const result = await search([child], ['textContent'], (search) =>
-							fileSearch(search, match.filepath, match.line)
+						const result = await search(
+							[child],
+							['textContent', 'tagName'],
+							(search) => fileSearch(search, match.filepath, match.line)
 						);
 
 						openFileAtLine(

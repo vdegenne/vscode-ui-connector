@@ -21,6 +21,12 @@ interface VscodeUiConnectorPluginOptions {
 	 * Use this when vscode opens the wrong file for an element.
 	 */
 	ignoredShadowDoms: string[];
+
+	/**
+	 * Prints the composed path in the console when using
+	 * alt + click on the UI.
+	 */
+	debug: boolean;
 }
 
 export async function vscodeUiConnectorPlugin(
@@ -36,7 +42,8 @@ export async function vscodeUiConnectorPlugin(
 	}
 	contentScript = `
      window.VUC = {
-          ignoredShadowDoms: ${JSON.stringify(options.ignoredShadowDoms ?? [])}
+          ignoredShadowDoms: ${JSON.stringify(options.ignoredShadowDoms ?? [])},
+          debug: ${options.debug ?? false}
      };
      ${contentScript}
      `;
