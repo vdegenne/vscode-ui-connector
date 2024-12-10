@@ -1,11 +1,11 @@
 import fs from 'fs';
 import pathlib from 'path';
-import {fileURLToPath} from 'url';
 import {ResolvedConfig, Plugin as VitePlugin} from 'vite';
 import {resolvePort} from './config.js';
+import {SERVER_DEFAULT_PORT} from './constants.js';
 import {injectScriptIntoHTML} from './utils.js';
 
-const __dirname = pathlib.dirname(fileURLToPath(import.meta.url));
+const __dirname = import.meta.dirname;
 
 export const CONTENT_SCRIPT_FILEPATH = pathlib.join(
 	__dirname,
