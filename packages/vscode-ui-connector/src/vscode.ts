@@ -1,17 +1,20 @@
 import {execSync} from 'child_process';
+import {VscodeUiConnectorPluginOptions} from './rollup.js';
 
 export function openFileAtLine(
-	filePath: string,
-	lineNumber: number,
-	columnNumber?: number
+	filepath: string,
+	line: number,
+	col?: number | undefined,
+	opts?: VscodeUiConnectorPluginOptions
 ) {
-	const position = columnNumber
-		? `${lineNumber}:${columnNumber}`
-		: `${lineNumber}`;
-	const command = `code -g ${filePath}:${position}`;
+	const position = col ? `${line}:${col}` : `${line}`;
+	const command = `code -g ${filepath}:${position}`;
 
 	try {
 		execSync(command);
+		if (opts?.postExec) {
+			execSync(opts.postExec);
+		}
 	} catch (error) {
 		console.error('Error occurred while opening file in VSCode:', error);
 	}

@@ -1,11 +1,10 @@
 import fs from 'fs';
-import pathlib from 'path';
-import {SERVER_DEFAULT_PORT} from './constants.js';
+import pathlib, {extname} from 'path';
 import {ResolvedConfig, Plugin as VitePlugin} from 'vite';
-import {extname} from 'path';
-import {injectScriptIntoHTML} from './utils.js';
 import {resolvePort} from './config.js';
+import {SERVER_DEFAULT_PORT} from './constants.js';
 import {__dirname} from './path.js';
+import {injectScriptIntoHTML} from './utils.js';
 
 export const CONTENT_SCRIPT_FILEPATH = pathlib.join(
 	__dirname,
@@ -14,7 +13,7 @@ export const CONTENT_SCRIPT_FILEPATH = pathlib.join(
 	'content-script.js'
 );
 
-interface VscodeUiConnectorPluginOptions {
+export interface VscodeUiConnectorPluginOptions {
 	/**
 	 * List of extra ignored elements,
 	 * The click won't include objects from their shadow-dom.
@@ -27,6 +26,20 @@ interface VscodeUiConnectorPluginOptions {
 	 * alt + click on the UI.
 	 */
 	debug: boolean;
+
+	/**
+	 * Strategy to use to open best match file:
+	 *
+	 * - vscode (default): will open the file in VSCode.
+	 * - tmux-vim: will send ":edit +<position> <filepath>" to the active tmux session,
+	 *		which means the active window should have [n]vim open to work correctly.
+	 */
+	openStrategy: 'vscode' | 'tmux-vim';
+
+	/**
+	 * Post execution command to run on the host system.
+	 */
+	postExec: string | undefined;
 }
 
 export async function vscodeUiConnectorPlugin(
@@ -41,10 +54,12 @@ export async function vscodeUiConnectorPlugin(
 		);
 	}
 	contentScript = `
-     window.VUC = {
-          ignoredShadowDoms: ${JSON.stringify(options.ignoredShadowDoms ?? [])},
-          debug: ${options.debug ?? false}
-     };
+window.VUC = {
+	ignoredShadowDoms: ${JSON.stringify(options.ignoredShadowDoms ?? [])},
+	debug: ${options.debug ?? false},
+	openStrategy: "${options.openStrategy ?? 'vscode'}",
+	postExec: "${options.postExec ?? ''}"
+};
      ${contentScript}
      `;
 

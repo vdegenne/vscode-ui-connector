@@ -1,13 +1,32 @@
-import Koa from 'koa';
-import KoaRouter from '@koa/router';
 import {bodyParser} from '@koa/bodyparser';
 import cors from '@koa/cors';
+import KoaRouter from '@koa/router';
+import Koa from 'koa';
 import {ServerOptions} from './config.js';
+import {LOCAL_STORAGE_HANDLER} from './constants.js';
 import {ClientServerBody, SearchSchema} from './context.js';
-import {grep} from './search/grep.js';
-import {openFileAtLine} from './vscode.js';
-import {search} from './search/search.js';
+import {VscodeUiConnectorPluginOptions} from './rollup.js';
 import {fileSearch} from './search/fileSearch.js';
+import {grep} from './search/grep.js';
+import {search} from './search/search.js';
+import {openFileAtLine as openTmuxVim} from './tmux-vim.js';
+import {openFileAtLine as openVSCode} from './vscode.js';
+
+function open(
+	filepath: string,
+	line: number,
+	col: number,
+	opts: VscodeUiConnectorPluginOptions
+) {
+	switch (opts.openStrategy) {
+		case 'vscode':
+			openVSCode(filepath, line, col, opts);
+			break;
+		case 'tmux-vim':
+			openTmuxVim(filepath, line, col, opts);
+			break;
+	}
+}
 
 export function startServer(options: ServerOptions) {
 	const app = new Koa();
@@ -18,7 +37,7 @@ export function startServer(options: ServerOptions) {
 
 	router.post('/', async (ctx) => {
 		const body = ctx.request.body as ClientServerBody;
-		if (!body.context) {
+		if (!body.context || !body.opts) {
 			ctx.throw();
 		}
 
@@ -43,7 +62,7 @@ export function startServer(options: ServerOptions) {
 			const nodeIndex = body.context.indexOf(result.search.node);
 			if (nodeIndex === 0) {
 				// We found the most close match
-				openFileAtLine(match.filepath, match.line, match.column);
+				open(match.filepath, match.line, match.column, body.opts);
 				return (ctx.body = '');
 			}
 
@@ -67,7 +86,7 @@ export function startServer(options: ServerOptions) {
 
 						if (child.typeIndex <= result.matches.length) {
 							const match = result.matches[child.typeIndex];
-							openFileAtLine(match.filepath, match.line, match.column);
+							open(match.filepath, match.line, match.column, body.opts);
 							return (ctx.body = '');
 						}
 					} catch (err) {}
@@ -79,10 +98,11 @@ export function startServer(options: ServerOptions) {
 							(search) => fileSearch(search, match.filepath, match.line)
 						);
 
-						openFileAtLine(
+						open(
 							result.matches[0].filepath,
 							result.matches[0].line,
-							result.matches[0].column
+							result.matches[0].column,
+							body.opts
 						);
 						return (ctx.body = '');
 					} catch (err) {}
@@ -90,7 +110,7 @@ export function startServer(options: ServerOptions) {
 			}
 
 			// If nothing was more precisly found we focus first match
-			openFileAtLine(match.filepath, match.line, match.column);
+			open(match.filepath, match.line, match.column, body.opts);
 			return (ctx.body = '');
 		} catch (err) {
 			// Nothing was found.
@@ -104,7 +124,9 @@ export function startServer(options: ServerOptions) {
 		console.log(
 			'=====================================================\n' +
 				`VSCode UI Connector Server listening on port ${options.port}\n` +
-				'=====================================================\n'
+				'=====================================================\n' +
+				'If you are using the extension, copy the following in the devtools console of your local website:\n\n' +
+				`localStorage.setItem("${LOCAL_STORAGE_HANDLER}", ${options.port})\n\n`
 		);
 	});
 }
