@@ -1,6 +1,6 @@
 {
 	"name": "vscode-ui-connector",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"author": "Valentin Degenne <vdegenne@gmail.com>",
 	"license": "MIT",
 	"type": "module",
@@ -30,7 +30,7 @@
 			"clean": "if-file-deleted",
 			"files": [
 				"./src",
-				"tsconfig.json"
+				"./tsconfig.json"
 			],
 			"output": [
 				"./out"
@@ -39,14 +39,13 @@
 		"build:dist": {
 			"command": "rollup -c",
 			"files": [
-				"./out",
-				"rollup.config.js"
-			],
-			"output": [
-				"./dist"
+				"./rollup.config.js"
 			],
 			"dependencies": [
 				"build:ts"
+			],
+			"output": [
+				"./dist"
 			]
 		}
 	},
