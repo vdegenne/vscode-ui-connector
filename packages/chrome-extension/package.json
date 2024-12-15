@@ -29,8 +29,7 @@
 		}
 	},
 	"devDependencies": {
-		"@types/chrome": "^0.0.251",
-		"shared": "^1.0.0",
-		"vite": "^5.0.0"
+		"@types/chrome": "^0.0.287",
+		"vite": "^6.0.3"
 	}
 }
