@@ -14,7 +14,7 @@ export function grep(search: Search, include: string | string[]): SearchResult {
 		return result;
 	}
 
-	const grepCommand = `grep -rn '${search.query}' ${files.join(' ')}`;
+	const grepCommand = `grep -rnH '${search.query}' ${files.join(' ')}`;
 
 	try {
 		const grepOutput = execSync(grepCommand, {encoding: 'utf-8'});
