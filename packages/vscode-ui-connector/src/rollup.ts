@@ -2,7 +2,7 @@ import fs from 'fs';
 import pathlib from 'path';
 import {ResolvedConfig, Plugin as VitePlugin} from 'vite';
 import {resolvePort} from './config.js';
-import {SERVER_DEFAULT_PORT} from './constants.js';
+import {CONTENT_SCRIPT_PORT_PLACEHOLDER} from './constants.js';
 import {injectScriptIntoHTML} from './utils.js';
 
 const __dirname = import.meta.dirname;
@@ -27,39 +27,33 @@ export interface VscodeUiConnectorPluginOptions {
 	 * alt + click on the UI.
 	 */
 	debug: boolean;
-
-	/**
-	 * Strategy to use to open best match file:
-	 *
-	 * - vscode (default): will open the file in VSCode.
-	 * - tmux-vim: will send ":edit +<position> <filepath>" to the active tmux session,
-	 *		which means the active window should have [n]vim open to work correctly.
-	 */
-	openStrategy: 'vscode' | 'tmux-vim';
-
-	/**
-	 * Post execution command to run on the host system.
-	 */
-	postExec: string | undefined;
 }
 
-export async function vscodeUiConnectorPlugin(
+export function vscodeUiConnectorPlugin(
 	options: Partial<VscodeUiConnectorPluginOptions> = {}
-): Promise<VitePlugin> {
-	let contentScript = fs.readFileSync(CONTENT_SCRIPT_FILEPATH).toString();
-	const port = await resolvePort();
-	if (port !== SERVER_DEFAULT_PORT) {
-		contentScript = contentScript.replace(
-			new RegExp(String(SERVER_DEFAULT_PORT), 'g'),
-			port.toString()
-		);
+): VitePlugin {
+	const port = resolvePort();
+	if (port === undefined) {
+		throw new Error(`******************************************************************\n
+* Couldn't find a valid port.\n
+* Make sure the config file \`.vuc.json\` exists\n
+* and has a valid port in it\n
+* or run the server prior to the client\n
+* to generate one automatically.\n
+*******************************************************************\n`);
 	}
+
+	let contentScript = fs.readFileSync(CONTENT_SCRIPT_FILEPATH).toString();
+
+	contentScript = contentScript.replace(
+		new RegExp(String(CONTENT_SCRIPT_PORT_PLACEHOLDER), 'g'),
+		port.toString()
+	);
+
 	contentScript = `
 window.VUC = {
 	ignoredShadowDoms: ${JSON.stringify(options.ignoredShadowDoms ?? [])},
 	debug: ${options.debug ?? false},
-	openStrategy: "${options.openStrategy ?? 'vscode'}",
-	postExec: "${options.postExec ?? ''}"
 };
      ${contentScript}
      `;

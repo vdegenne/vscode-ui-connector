@@ -1,75 +1,104 @@
-import fs from "fs";
-import _getPort from "get-port";
-import {
-  CACHED_DIRECTORY,
-  CACHED_PORT_FILEPATH,
-  DEFAULT_CONFIG,
-} from "./constants.js";
-import { convertToWindowsPathIfNecessary } from "./path.js";
+import fs from 'fs';
+import {DEFAULT_CONFIG} from './constants.js';
 
-export const CONFIG_FILENAME = ".vuc.json";
+export const CONFIG_FILENAME = '.vuc.json';
 
 export interface ServerOptions {
-  /**
-   * Port to use for the connector server.
-   */
-  port: number;
-  /**
-   * Files to include in the grep searches.
-   */
-  include: string | string[];
+	/**
+	 * Port to use for the connector server.
+	 * @default generated automatically when the server starts if it doesn't exist in user-config file.
+	 */
+	port: number | undefined;
+
+	/**
+	 * Files to include in the grep searches.
+	 * @default all sources files under "src".
+	 */
+	include: string | string[];
+
+	/**
+	 * Display debug information in terminal where the server runs.
+	 * @default false
+	 */
+	debug: boolean;
+
+	/**
+	 * Strategy to use to open best match file:
+	 *
+	 * - vscode (default): will open the file in VSCode.
+	 * - tmux-vim: will send ":edit +<position> <filepath>" to the active tmux session,
+	 *		which means the active window should have [n]vim open to work correctly.
+	 *
+	 * @default "vscode"
+	 */
+	openStrategy: 'vscode' | 'tmux-vim';
+
+	/**
+	 * Additional options for "tmux-vim" strategy.
+	 */
+	tmuxOptions: {
+		/**
+		 * Session's name where to run the command in.
+		 * @default ":"
+		 */
+		session: string;
+	};
+
+	/**
+	 * Post execution command to run on the host system.
+	 */
+	postExec: string | undefined;
 }
 
 /**
  * Returns user-defined config or null if not found.
  */
 export function getUserConfig(): Partial<ServerOptions> | null {
-  try {
-    const fileContent = fs.readFileSync(CONFIG_FILENAME);
-    return JSON.parse(fileContent.toString());
-  } catch (e) {
-    return null;
-  }
+	try {
+		const fileContent = fs.readFileSync(CONFIG_FILENAME);
+		return JSON.parse(fileContent.toString());
+	} catch (e) {
+		return null;
+	}
 }
 
 /**
  * Returns the config made from combining user-defined config and default values.
  */
 export function getComposedConfig(): ServerOptions {
-  return {
-    // default
-    ...DEFAULT_CONFIG,
-    // config
-    ...(getUserConfig() ?? {}),
-  };
+	return {
+		...DEFAULT_CONFIG,
+		...(getUserConfig() ?? {}),
+	};
 }
 
-export async function resolvePort(): Promise<number> {
-  let port: number;
-  // We resolve the port value following these priorities
-  // 1. User-defined port
-  const config = getUserConfig();
-  if (config && config.port) {
-    return config.port;
-  }
+export function resolvePort(): number | undefined {
+	let port: number | undefined;
+	// We resolve the port value following these priorities
+	// 1. User-defined port
+	const config = getUserConfig();
+	if (config !== null && config.port) {
+		port = config.port;
+		// return config.port;
+	}
 
-  // 2. Cached port (DEPRECATED)
-  const portFilePath = convertToWindowsPathIfNecessary(CACHED_PORT_FILEPATH);
-  if (fs.existsSync(portFilePath)) {
-    port = parseInt(fs.readFileSync(CACHED_PORT_FILEPATH).toString());
-  }
+	// // 2. Cached port (DEPRECATED)
+	// const portFilePath = convertToWindowsPathIfNecessary(CACHED_PORT_FILEPATH);
+	// if (fs.existsSync(portFilePath)) {
+	// 	port = parseInt(fs.readFileSync(CACHED_PORT_FILEPATH).toString());
+	// }
+	//
+	// // 3. Get a random port
+	// if (port === undefined) {
+	// 	port = await _getPort();
+	// }
+	//
+	// // Cache the port
+	// if (!fs.existsSync(CACHED_DIRECTORY)) {
+	// 	await fs.promises.mkdir(CACHED_DIRECTORY);
+	// }
+	// // fs.promises.writeFile(CACHED_PORT_FILEPATH, `${port}`);
+	// fs.promises.writeFile(CONFIG_FILENAME, JSON.stringify({port}, null, 2));
 
-  // 3. Get a random port
-  if (port === undefined) {
-    port = await _getPort();
-  }
-
-  // Cache the port
-  if (!fs.existsSync(CACHED_DIRECTORY)) {
-    await fs.promises.mkdir(CACHED_DIRECTORY);
-  }
-  // fs.promises.writeFile(CACHED_PORT_FILEPATH, `${port}`);
-  fs.promises.writeFile(CONFIG_FILENAME, JSON.stringify({ port }, null, 2));
-
-  return port;
+	return port;
 }

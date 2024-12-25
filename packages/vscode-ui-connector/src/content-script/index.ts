@@ -1,11 +1,11 @@
 import {
-	type Context,
 	type ClientServerBody,
+	type Context,
 	cleanContextObject,
 } from '../context.js';
-import {getPort} from './storage.js';
-import {getNodeInformationFromTarget} from './node-information.js';
 import {type VscodeUiConnectorPluginOptions} from '../rollup.js';
+import {getNodeInformationFromTarget} from './node-information.js';
+import {getPort} from './storage.js';
 
 declare global {
 	interface Window {
@@ -39,11 +39,16 @@ window.addEventListener('click', async (event: MouseEvent) => {
 			console.log(JSON.parse(JSON.stringify(context)));
 		}
 
+		const body: ClientServerBody = {
+			context,
+			// opts: window.VUC
+		};
+
 		// We send the information to the connector server
 		fetch(`http://localhost:${port}/`, {
 			method: 'POST',
 			headers: {'content-type': 'application/json'},
-			body: JSON.stringify({context, opts: window.VUC} as ClientServerBody),
+			body: JSON.stringify(body),
 		});
 	}
 });

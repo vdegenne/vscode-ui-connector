@@ -1,11 +1,11 @@
 import {bodyParser} from '@koa/bodyparser';
 import cors from '@koa/cors';
 import KoaRouter from '@koa/router';
+import {execSync} from 'child_process';
 import Koa from 'koa';
 import {ServerOptions} from './config.js';
 import {LOCAL_STORAGE_HANDLER} from './constants.js';
-import {ClientServerBody, SearchSchema} from './context.js';
-import {VscodeUiConnectorPluginOptions} from './rollup.js';
+import type {ClientServerBody, SearchSchema} from './context.js';
 import {fileSearch} from './search/fileSearch.js';
 import {grep} from './search/grep.js';
 import {search} from './search/search.js';
@@ -16,8 +16,12 @@ function open(
 	filepath: string,
 	line: number,
 	col: number,
-	opts: VscodeUiConnectorPluginOptions
+	opts: ServerOptions
 ) {
+	if (opts.debug) {
+		console.log(`best match: ${filepath}:${line}:${col ?? 0}`);
+	}
+
 	switch (opts.openStrategy) {
 		case 'vscode':
 			openVSCode(filepath, line, col, opts);
@@ -25,6 +29,14 @@ function open(
 		case 'tmux-vim':
 			openTmuxVim(filepath, line, col, opts);
 			break;
+	}
+
+	try {
+		if (opts?.postExec) {
+			execSync(opts.postExec);
+		}
+	} catch (err) {
+		console.error(`Post execution command failed: ${err.message}`);
 	}
 }
 
@@ -37,7 +49,7 @@ export function startServer(options: ServerOptions) {
 
 	router.post('/', async (ctx) => {
 		const body = ctx.request.body as ClientServerBody;
-		if (!body.context || !body.opts) {
+		if (!body.context) {
 			ctx.throw();
 		}
 
@@ -62,7 +74,7 @@ export function startServer(options: ServerOptions) {
 			const nodeIndex = body.context.indexOf(result.search.node);
 			if (nodeIndex === 0) {
 				// We found the most close match
-				open(match.filepath, match.line, match.column, body.opts);
+				open(match.filepath, match.line, match.column, options);
 				return (ctx.body = '');
 			}
 
@@ -86,7 +98,7 @@ export function startServer(options: ServerOptions) {
 
 						if (child.typeIndex <= result.matches.length) {
 							const match = result.matches[child.typeIndex];
-							open(match.filepath, match.line, match.column, body.opts);
+							open(match.filepath, match.line, match.column, options);
 							return (ctx.body = '');
 						}
 					} catch (err) {}
@@ -102,7 +114,7 @@ export function startServer(options: ServerOptions) {
 							result.matches[0].filepath,
 							result.matches[0].line,
 							result.matches[0].column,
-							body.opts
+							options
 						);
 						return (ctx.body = '');
 					} catch (err) {}
@@ -110,7 +122,7 @@ export function startServer(options: ServerOptions) {
 			}
 
 			// If nothing was more precisly found we focus first match
-			open(match.filepath, match.line, match.column, body.opts);
+			open(match.filepath, match.line, match.column, options);
 			return (ctx.body = '');
 		} catch (err) {
 			// Nothing was found.

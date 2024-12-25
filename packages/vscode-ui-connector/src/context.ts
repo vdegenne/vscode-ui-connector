@@ -1,5 +1,3 @@
-import {VscodeUiConnectorPluginOptions} from './rollup.js';
-
 export type AttributesProperty = {
 	[attributeName: string]: string;
 };
@@ -25,7 +23,6 @@ export type Context = NodeInformation[];
 
 export interface ClientServerBody {
 	context: Context;
-	opts: VscodeUiConnectorPluginOptions;
 }
 
 type LooseAutoComplete<T extends string> = T | Omit<string, T>;

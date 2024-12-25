@@ -1,6 +1,5 @@
 import {IGNORED_CLASSES, IGNORED_SHADOW_DOMS} from '../constants.js';
 import {
-	Context,
 	DevInformation,
 	NodeInformation,
 	typesToExcludeFromTypeIndex,
