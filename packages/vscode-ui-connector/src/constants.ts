@@ -20,9 +20,9 @@ export const IGNORED_CLASSES = [
 
 export const LOCAL_STORAGE_HANDLER = 'vscode-ui-connector:port';
 
-export const DEFAULT_GREP_INCLUDE = 'src/**/*.{ts,tsx,js,jsx,html,css}';
+export const DEFAULT_GREP_INCLUDE = './src/**/*.{ts,tsx,js,jsx,html,css}';
 
-export const DEFAULT_CONFIG: ServerOptions = {
+export const DEFAULT_OPTIONS: ServerOptions = {
 	port: undefined,
 	include: DEFAULT_GREP_INCLUDE,
 	openStrategy: 'vscode',

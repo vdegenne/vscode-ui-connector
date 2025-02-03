@@ -1,5 +1,5 @@
 import fs from 'fs';
-import {DEFAULT_CONFIG} from './constants.js';
+import {DEFAULT_OPTIONS} from './constants.js';
 
 export const CONFIG_FILENAME = '.vuc.json';
 
@@ -50,6 +50,17 @@ export interface ServerOptions {
 	postExec: string | undefined;
 }
 
+// const defaultOptions: ServerOptions = {
+// 	port: undefined,
+// 	openStrategy: 'tmux-vim',
+// 	debug: false,
+// 	include: './src/**/*',
+// 	tmuxOptions: {
+// 		session: 'gits/jp-synonymes-dex',
+// 	},
+// 	postExec: 'wlrctl window focus Alacritty',
+// };
+
 /**
  * Returns user-defined config or null if not found.
  */
@@ -67,7 +78,7 @@ export function getUserConfig(): Partial<ServerOptions> | null {
  */
 export function getComposedConfig(): ServerOptions {
 	return {
-		...DEFAULT_CONFIG,
+		...DEFAULT_OPTIONS,
 		...(getUserConfig() ?? {}),
 	};
 }
@@ -75,7 +86,7 @@ export function getComposedConfig(): ServerOptions {
 export function resolvePort(): number | undefined {
 	let port: number | undefined;
 	// We resolve the port value following these priorities
-	// 1. User-defined port
+	// 1. Userdefined port
 	const config = getUserConfig();
 	if (config !== null && config.port) {
 		port = config.port;
